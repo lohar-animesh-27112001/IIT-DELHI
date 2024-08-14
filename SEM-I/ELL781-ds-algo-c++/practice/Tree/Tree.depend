@@ -1,0 +1,16 @@
+# depslib dependency file v1.0
+1723633538 source:i:\c++\tree\main.cpp
+	<iostream>
+	<bits/stdc++.h>
+	"tree_node.h"
+	"bstree.h"
+
+1723285224 i:\c++\tree\tree_node.h
+	<iostream>
+	<bits/stdc++.h>
+
+1723633666 i:\c++\tree\bstree.h
+	<iostream>
+	<bits/stdc++.h>
+	"tree_node.h"
+

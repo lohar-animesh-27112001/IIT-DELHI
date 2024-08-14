@@ -1,0 +1,27 @@
+# depslib dependency file v1.0
+1723239670 source:i:\c++\dma\dma_linked_list\main.cpp
+	<iostream>
+	<bits/stdc++.h>
+	"node.h"
+	"linked_list.h"
+	"doubly_node.h"
+	"doubly_linked_list.h"
+
+1723064109 i:\c++\dma\dma_linked_list\node.h
+	<iostream>
+	<bits/stdc++.h>
+
+1723114997 i:\c++\dma\dma_linked_list\linked_list.h
+	<iostream>
+	<bits/stdc++.h>
+	"node.h"
+
+1723267616 i:\c++\dma\dma_linked_list\doubly_node.h
+	<iostream>
+	<bits/stdc++.h>
+
+1723267631 i:\c++\dma\dma_linked_list\doubly_linked_list.h
+	<iostream>
+	<bits/stdc++.h>
+	"doubly_node.h"
+
