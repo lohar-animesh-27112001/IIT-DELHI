@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1724503362 source:i:\c++\heap\main.cpp
+	<bits/stdc++.h>
+
+1723727972 i:\c++\heap\heap_node.h
+	<iostream>
+	<bits/stdc++.h>
+
