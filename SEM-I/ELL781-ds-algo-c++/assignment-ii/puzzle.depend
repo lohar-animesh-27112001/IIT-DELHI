@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1728462455 source:e:\aaa iit delhi\sem-i\ell781-ds-algo-c++\assignment-ii\puzzle\main.cpp
+	<bits/stdc++.h>
+	"puzzle_solver_dma.h"
+
+1728461955 e:\aaa iit delhi\sem-i\ell781-ds-algo-c++\assignment-ii\puzzle\puzzle_solver.h
+	<bits/stdc++.h>
+
+1728462415 e:\aaa iit delhi\sem-i\ell781-ds-algo-c++\assignment-ii\puzzle\puzzle_solver_dma.h
+	<bits/stdc++.h>
+
