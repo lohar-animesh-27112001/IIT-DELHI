@@ -1,0 +1,245 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{caption}
+\geometry{margin=1in}
+
+\title{DialoCONAN Counterspeech Generation Challenge \\ Prof. Tanmoy Chakraborty - ELL884}
+\author{Project3 : C.Tech-Z \\ Om Prakash - 2023EET2177 \\ Animesh Lohar - 2024EET2368}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+The proliferation of offensive content on social media platforms necessitates automated systems capable of counterspeech generation to promote positive interactions and reduce hate speech. Recent advances in transformer-based architectures, such as BART \cite{lewis2019bart}, have enabled the development of generative models that can produce contextually relevant responses.
+
+This report documents the process, challenges, and performance evaluation of fine-tuning such a model on a dataset derived from dialogue annotations for counterspeech. We analyze training logs, evaluate metrics, and provide mathematical insights into the evaluation strategies and observed issues.
+
+\section{Dataset and Preprocessing}
+\subsection{Dataset Description}
+The dataset, sourced from \texttt{DIALOCONAN.csv}, contains dialogue annotations with fields such as \texttt{dialogue\_id}, \texttt{turn\_id}, \texttt{type}, and \texttt{text}. The critical class of interest is \texttt{type='CN'}}, indicating counterspeech turns.
+
+\subsection{Preprocessing Pipeline}
+The preprocessing involves grouping dialogue turns by \texttt{dialogue\_id}, sorting by \texttt{turn\_id}, and constructing context-response pairs. Formally, for each dialogue \( D = \{ (t_i) \} \), where \( t_i \) has attributes \( (\text{type}_i, \text{text}_i, \text{turn\_id}_i) \), the input \( X_j \) and output \( Y_j \) for a counterspeech turn \( t_j \) are:
+
+\begin{equation}
+X_j = \bigcup_{i < j} \text{text}_i , \quad \text{and} \quad Y_j = \text{text}_j
+\end{equation}
+
+This creates a sequence-to-sequence learning problem, where the model learns to generate \( Y_j \) conditioned on \( X_j \).
+
+\subsection{Implementation Snippet}
+\begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily]
+def preprocess_data(file_path):
+    df = pd.read_csv(file_path)
+    dialogues = df.groupby('dialogue_id')
+    inputs, outputs = [], []
+    for dialogue_id, group in dialogues:
+        turns = group.sort_values('turn_id')
+        for _, row in turns.iterrows():
+            if row['type'] == 'CN':
+                context = turns[turns['turn_id'] < row['turn_id']]
+                input_text = "\n".join(context['text'].tolist())
+                inputs.append(input_text)
+                outputs.append(row['text'])
+    return pd.DataFrame({'input': inputs, 'output': outputs})
+\end{lstlisting}
+
+\section{Model Architecture and Training}
+\subsection{Model Choice}
+We utilize \textbf{BART} \cite{lewis2019bart} due to its seq2seq capabilities, pretraining on corrupted text, and strong transfer learning performance. The architecture comprises an encoder \( E(\cdot) \) and decoder \( D(\cdot) \), with the generation probability:
+
+\begin{equation}
+P_\theta(Y|X) = \prod_{t=1}^{T} P_\theta(y_t| y_{<t}, X)
+\end{equation}
+where \( y_t \) is the token at position \( t \) in the output sequence.
+
+\subsection{Training Hyperparameters}
+- Learning rate \( \eta = 2 \times 10^{-5} \)  
+- Batch size \( B = 1 \) with gradient accumulation over 8 steps  
+- Epochs \( N=3 \)  
+- Beam search with \( \text{num\_beams} = 4 \)
+
+\subsection{Loss Function}
+The negative log-likelihood (NLL) loss:
+
+\begin{equation}
+\mathcal{L}(\theta) = - \sum_{(X,Y)} \log P_\theta(Y|X)
+\end{equation}
+
+which is minimized during training via stochastic gradient descent.
+
+\section{Training Logs and Observations}
+\subsection{Evaluation Metrics Over Epochs}
+The training logs are summarized as follows:
+
+\begin{longtable}{cccccc}
+\caption{Training and Evaluation Metrics} \\
+\toprule
+Epoch & Eval Loss & BLEU & ROUGE-L & BERTScore F1 & Runtime (s) \\
+\midrule
+\endfirsthead
+\toprule
+Epoch & Eval Loss & BLEU & ROUGE-L & BERTScore F1 & Runtime (s) \\
+\midrule
+\endhead
+1 & 5.757 & 0.0 & 0.0129 & -0.525 & 104.7 \\
+2 & 4.001 & 0.0 & 0.0116 & -1.041 & 19.8 \\
+3 & 3.673 & 0.0 & 0.0206 & -0.526 & 16.0 \\
+\bottomrule
+\end{longtable}
+
+\subsection{Analysis of Metrics}
+The key observations:
+
+\begin{itemize}
+\item \textbf{BLEU} scores are consistently at zero, indicating negligible n-gram overlap between generated and reference responses.
+\item \textbf{ROUGE-L} scores are very low (~1-2\%), suggesting minimal subsequence overlap.
+\item \textbf{BERTScore F1} is negative, reflecting poor semantic similarity or empty outputs.
+\item High \textbf{eval\_loss} indicates poor model calibration or trivial outputs.
+\end{itemize}
+
+\subsection{Generated Outputs}
+Sample logs reveal warnings:
+
+\begin{verbatim}
+Warning: Empty candidate sentence detected; setting raw BERTscores to 0.
+\end{verbatim}
+This indicates the model often produces empty or invalid responses, severely impacting evaluation scores.
+
+\section{Mathematical Insights into Evaluation Metrics}
+\subsection{BLEU Score}
+Given candidate \( C \) and reference \( R \) sequences, BLEU computes an \( n \)-gram precision:
+
+\begin{equation}
+p_n = \frac{\sum_{n\text{-grams} \in C} \text{Count}_{clip}(n\text{-grams})}{\sum_{n\text{-grams} \in C} \text{Count}(n\text{-grams})}
+\end{equation}
+
+The BLEU score aggregates over \( N \) \( n \)-gram precisions with weights \( w_n \):
+
+\begin{equation}
+\text{BLEU} = \text{BP} \times \exp \left( \sum_{n=1}^N w_n \log p_n \right)
+\end{equation}
+
+where \( \text{BP} \) is the brevity penalty:
+
+\begin{equation}
+\text{BP} = \begin{cases}
+1, & \text{if } c > r \\
+e^{(1 - r/c)}, & \text{if } c \leq r
+\end{cases}
+\end{equation}
+
+with \( c \) = length of candidate, \( r \) = length of reference.
+
+\subsection{ROUGE-L}
+ROUGE-L is based on the Longest Common Subsequence (LCS):
+
+\begin{equation}
+\text{LCS}(X, Y) = \max_{subsequence} \{ \text{length of longest common subsequence} \}
+\end{equation}
+
+The ROUGE-L score:
+
+\begin{equation}
+\text{ROUGE-L} = \frac{(1 + \beta^2) \times \text{LCS}}{\text{len}(Y)} + \frac{(1 + \beta^2) \times \text{LCS}}{\text{len}(Y')}
+\end{equation}
+
+where \( \beta \) balances precision and recall.
+
+\subsection{BERTScore}
+BERTScore assesses semantic similarity via contextual embeddings \( \mathbf{E} \):
+
+\begin{equation}
+\text{BERTScore} = \frac{1}{|Y|} \sum_{i=1}^{|Y|} \max_{j} \text{sim}(\mathbf{E}_{Y_i}, \mathbf{E}_{Y'_j})
+\end{equation}
+
+with cosine similarity:
+
+\begin{equation}
+\text{sim}(\mathbf{a}, \mathbf{b}) = \frac{\mathbf{a} \cdot \mathbf{b}}{\|\mathbf{a}\| \|\mathbf{b}\|}
+\end{equation}
+
+Negative or near-zero values indicate poor semantic overlap.
+
+\section{Generation Strategies and Challenges}
+\subsection{Generation Function}
+The model generates responses using beam search:
+
+\begin{equation}
+\hat{Y} = \text{generate}(X) = \arg \max_{Y} P_\theta(Y|X), \quad \text{with } |Y| \leq 128
+\end{equation}
+
+\subsection{Observed Failures}
+The main issues involve:
+
+\begin{itemize}
+\item \textbf{Empty responses}: leading to zero BERT scores.
+\item \textbf{Overly generic outputs}: due to insufficient training.
+\item \textbf{Limited diversity}: caused by small beam size and lack of sampling.
+\end{itemize}
+
+\subsection{Mathematical Considerations}
+To improve diversity and avoid empty responses, techniques like nucleus sampling \cite{holtzman2019curious} can be employed, where the token probability distribution is truncated at a cumulative probability \( p \):
+
+\begin{equation}
+\mathcal{V}_p = \left\{ y : \sum_{y' \leq y} P(y') \leq p \right\}
+\end{equation}
+
+This encourages sampling from high-probability tokens while maintaining diversity.
+
+\section{Discussion and Recommendations}
+Based on the analysis, the following strategies can be adopted:
+
+\begin{itemize}
+\item \textbf{Improve Data Quality}: Ensure responses are meaningful and diverse.
+\item \textbf{Prompt Engineering}: Use explicit prompts like "Dialogue:" and "Counter:" to condition the model.
+\item \textbf{Training Duration}: Extend epochs and monitor validation metrics.
+\item \textbf{Decoding Strategies}: Use larger beam sizes, nucleus sampling, or temperature adjustments.
+\item \textbf{Evaluation}: Incorporate manual inspection and human-in-the-loop validation.
+\end{itemize}
+
+\section{Conclusion}
+The current experimental results reveal significant challenges in generating meaningful counterspeech responses, as evidenced by evaluation metrics and sample outputs. The root causes are multifaceted, involving data, model training, and decoding strategies. Addressing these issues requires a holistic approach combining data augmentation, prompt design, training refinement, and advanced decoding.
+
+Future work should focus on enhancing data quality, employing more sophisticated decoding techniques, and integrating human feedback to iteratively improve model responses.
+
+\section{References}
+\bibliographystyle{acl_natbib}
+\bibliography{references}
+
+\begin{thebibliography}{9}
+
+\bibitem{Helena2022DIALOCONAN}
+Helena Bonaldi1, Sara Dellantonio2, Serra Sinem Tekiroglu, Marco Guerini3. (2022). \textit{DIALOCONAN : Human-Machine Collaboration Approaches to Build a Dialogue Dataset for Hate Speech Countering}
+
+\bibitem{lewis2019bart}
+Lewis, M., Liu, Y., Goyal, N., et al. (2019). \textit{Bart: Denoising Sequence-to-Sequence Pre-training for Natural Language Generation, Translation, and Comprehension}. arXiv preprint arXiv:1910.13461.
+
+\bibitem{holtzman2019curious}
+Holtzman, A., Buys, J., Du, L., et al. (2019). The Curious Case of Neural Text Degeneration. \textit{arXiv preprint arXiv:1904.09751}.
+
+\bibitem{papineni2002bleu}
+Papineni, K., Roukos, S., Ward, T., \& Zhu, W.-J. (2002). BLEU: a method for automatic evaluation of machine translation. \textit{Proceedings of the 40th Annual Meeting on Association for Computational Linguistics}.
+
+\bibitem{lin2004rouge}
+Lin, C.-Y. (2004). ROUGE: A Package for Automatic Evaluation of Summaries. \textit{Text Summarization Branches Out}.
+
+\bibitem{zhang2019bertscore}
+Zhang, T., Kishore, V., Wu, F., Weinberger, K. Q., \& Artzi, Y. (2019). BERTScore: Evaluating Text Generation with BERT. \textit{International Conference on Learning Representations}.
+
+\end{thebibliography}
+
+\end{document}
