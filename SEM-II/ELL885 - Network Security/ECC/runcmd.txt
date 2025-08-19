@@ -1,0 +1,5 @@
+$ python3 data.py
+
+$ python3 ecc_encryption.py
+
+$ python3 ecc_decryption.py
