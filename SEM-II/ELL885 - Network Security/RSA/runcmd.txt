@@ -1,0 +1,5 @@
+$ python3 data.py
+
+$ python3 rsa_encryption.py
+
+$ python3 rsa_decryption.py
