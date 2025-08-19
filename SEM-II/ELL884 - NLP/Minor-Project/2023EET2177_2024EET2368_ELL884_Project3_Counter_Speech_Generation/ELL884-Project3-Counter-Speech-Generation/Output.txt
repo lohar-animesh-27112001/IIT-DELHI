@@ -1,0 +1,33 @@
+Map: 100%|███████████████████████████████████████████████████████████████████████| 249/249 [00:00<00:00, 1361.56 examples/s]
+Map: 100%|██████████████████████████████████████████████████████████████████████████| 28/28 [00:00<00:00, 899.40 examples/s]
+/home/animesh-lohar-2711/Desktop/NLP - Minor Proj/deep.py:165: FutureWarning: tokenizer is deprecated and will be removed in version 5.0.0 for Seq2SeqTrainer.__init__. Use processing_class instead.
+  trainer = Seq2SeqTrainer(
+tokenizer_config.json: 100%|██████████████████████████████████████████████████████████████| 25.0/25.0 [00:00<00:00, 177kB/s]
+config.json: 100%|█████████████████████████████████████████████████████████████████████████| 482/482 [00:00<00:00, 4.11MB/s]
+vocab.json: 100%|█████████████████████████████████████████████████████████████████████████| 899k/899k [00:05<00:00, 173kB/s]
+merges.txt: 100%|█████████████████████████████████████████████████████████████████████████| 456k/456k [00:03<00:00, 144kB/s]
+tokenizer.json: 100%|██████████████████████████████████████████████████████████████████| 1.36M/1.36M [00:01<00:00, 1.09MB/s]
+Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: pip install huggingface_hub[hf_xet] or pip install hf_xet<00:00, 1.09MB/s]
+WARNING:huggingface_hub.file_download:Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: pip install huggingface_hub[hf_xet] or pip install hf_xet
+model.safetensors: 100%|███████████████████████████████████████████████████████████████| 1.42G/1.42G [00:56<00:00, 25.1MB/s]
+Some weights of RobertaModel were not initialized from the model checkpoint at roberta-large and are newly initialized: ['pooler.dense.bias', 'pooler.dense.weight']███████████████████████████████████████████████| 1.42G/1.42G [00:56<00:00, 27.8MB/s]
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Warning: Empty candidate sentence detected; setting raw BERTscores to 0.
+{'eval_loss': 5.756929874420166, 'eval_bleu': 0.0, 'eval_rougeL': 0.012876774815326262, 'eval_bert_score_f1': -0.5246073603630066, 'eval_runtime': 104.7158, 'eval_samples_per_second': 0.267, 'eval_steps_per_second': 0.267, 'epoch': 1.0}            
+ 34%|█████████████████████████████▉                                                         | 32/93 [02:12<00:39,  1.54it/s/home/animesh-lohar-2711/anaconda3/lib/python3.12/site-packages/transformers/modeling_utils.py:3339: UserWarning: Moving the following attributes in the config to the generation config: {'early_stopping': True, 'num_beams': 4, 'no_repeat_ngram_size': 3, 'forced_bos_token_id': 0}. You are seeing this warning because you've set generation parameters in the model config, as opposed to in the generation config.
+  warnings.warn(
+ 69%|███████████████████████████████████████████████████████████▊                           | 64/93 [02:42<00:19,  1.48it/sSome weights of RobertaModel were not initialized from the model checkpoint at roberta-large and are newly initialized: ['pooler.dense.bias', 'pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Warning: Empty candidate sentence detected; setting raw BERTscores to 0.
+{'eval_loss': 4.001161575317383, 'eval_bleu': 0.0, 'eval_rougeL': 0.011622757706793878, 'eval_bert_score_f1': -1.0409907102584839, 'eval_runtime': 19.8507, 'eval_samples_per_second': 1.411, 'eval_steps_per_second': 1.411, 'epoch': 2.0}             
+100%|███████████████████████████████████████████████████████████████████████████████████████| 93/93 [03:31<00:00,  1.14it/sSome weights of RobertaModel were not initialized from the model checkpoint at roberta-large and are newly initialized: ['pooler.dense.bias', 'pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Warning: Empty candidate sentence detected; setting raw BERTscores to 0.
+{'eval_loss': 3.672682523727417, 'eval_bleu': 0.0, 'eval_rougeL': 0.020589982666080413, 'eval_bert_score_f1': -0.5261386036872864, 'eval_runtime': 16.0051, 'eval_samples_per_second': 1.749, 'eval_steps_per_second': 1.749, 'epoch': 2.93}            
+{'train_runtime': 232.0389, 'train_samples_per_second': 3.219, 'train_steps_per_second': 0.401, 'train_loss': 6.376183294480847, 'epoch': 2.93}                                                                                                         
+100%|███████████████████████████████████████████████████████████████████████████████████████| 93/93 [03:52<00:00,  2.50s/it]
+100%|███████████████████████████████████████████████████████████████████████████████████████| 28/28 [00:08<00:00,  3.18it/s]Some weights of RobertaModel were not initialized from the model checkpoint at roberta-large and are newly initialized: ['pooler.dense.bias', 'pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Warning: Empty candidate sentence detected; setting raw BERTscores to 0.
+100%|███████████████████████████████████████████████████████████████████████████████████████| 28/28 [00:16<00:00,  1.72it/s]
+{'eval_loss': 3.672682523727417, 'eval_bleu': 0.0, 'eval_rougeL': 0.020589982666080413, 'eval_bert_score_f1': -0.5261386036872864, 'eval_runtime': 16.5109, 'eval_samples_per_second': 1.696, 'eval_steps_per_second': 1.696, 'epoch': 2.931726907630522}
