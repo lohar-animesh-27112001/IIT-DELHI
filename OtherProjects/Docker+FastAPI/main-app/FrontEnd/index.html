@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Insurance Premium Predictor</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Insurance Premium Prediction</h2>
+    <form id="predictionForm">
+      <label for="age">Age:</label>
+      <input type="number" id="age" name="age" min="0" max="120" required />
+
+      <label for="weight">Weight (kg):</label>
+      <input type="number" id="weight" name="weight" step="0.1" required />
+
+      <label for="height">Height (cm):</label>
+      <input type="number" id="height" name="height" step="0.1" required />
+
+      <label for="income_lpa">Income (LPA):</label>
+      <input type="number" id="income_lpa" name="income_lpa" step="0.1" required />
+
+      <label for="smoker">Smoker:</label>
+      <select id="smoker" name="smoker" required>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+
+      <label for="city">City:</label>
+      <input type="text" id="city" name="city" required />
+
+      <label for="occupation">Occupation:</label>
+      <select id="occupation" name="occupation" required>
+        <option value="retired">Retired</option>
+        <option value="freelancer">Freelancer</option>
+        <option value="student">Student</option>
+        <option value="government_job">Government Job</option>
+        <option value="business_owner">Business Owner</option>
+        <option value="unemployed">Unemployed</option>
+        <option value="private_job">Private Job</option>
+      </select>
+
+      <button type="submit">Predict</button>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
