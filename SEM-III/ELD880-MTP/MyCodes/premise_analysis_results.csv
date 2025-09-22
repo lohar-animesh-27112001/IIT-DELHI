@@ -1,0 +1,7 @@
+Premise,#Factual (Baseline),#Counterfact (Baseline),%Factual (Baseline),#Factual (Ablated),#Counterfact (Ablated),%Factual (Ablated)
+Redefine,347,107,76.43%,365,97,79.00%
+Assess,282,207,57.67%,290,191,60.29%
+Fact Check,268,214,55.60%,309,167,64.92%
+Review,284,257,52.50%,310,223,58.16%
+Validate,282,211,57.20%,301,183,62.19%
+Verify,255,228,52.80%,288,193,59.88%
